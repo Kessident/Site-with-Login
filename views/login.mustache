@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Login Page</title>
+  </head>
+  <body>
+    <h1>Login</h1>
+    <form action="/login" method="post">
+      <div class="errorContainer">
+        {{#errors}}
+        <p>{{.}}</p>
+        {{/errors}}
+      </div>
+      <input type="text" name="username" placeholder="Username" autofocus><br>
+      <input type="password" name="password" placeholder="Password"><br>
+      <button type="submit">Submit</button>
+    </form>
+    <br><br><a href="/signUp"><button>Sign Up</button></a><br><br><br>
+    <form action="/login" method="post">
+      <button type="submit" name="clickBtn" value="clicked">This button has been clicked {{clicks}} times</button>
+    </form>
+
+  </body>
+</html>
