@@ -3,8 +3,8 @@ const mustacheExpress = require("mustache-express");
 const bodyParser = require("body-parser");
 const expressValidator = require("express-validator");
 const path = require("path");
-const jsonFile = require("jsonfile");
 const session = require("express-session");
+const jsonFile = require("jsonfile");
 
 //Express App Initialization
 const app = express();
@@ -27,7 +27,6 @@ app.use(session({
   saveUninitialized: false
 }));
 
-
 let messages = [];
 let btnClick;
 let users;
@@ -37,10 +36,12 @@ jsonFile.readFile("database.json", function(err, obj) {
 });
 
 app.get("/", function(req, res) {
-  if (req.session.username) {
-    res.redirect("/user");
-  } else {
+  if (!req.session.username) {
     res.redirect("/login");
+  } else {
+    res.render("user", {
+      username: req.session.username
+    });
   }
 });
 
@@ -52,12 +53,6 @@ app.get("/login", function(req, res) {
 
 app.get("/signUp", function(req, res) {
   res.render("signUp");
-});
-
-app.get("/user", function(req, res) {
-  res.render("user", {
-    username: req.session.username
-  });
 });
 
 app.post("/signUp", function(req, res) {
@@ -74,7 +69,7 @@ app.post("/signUp", function(req, res) {
     users: users
   });
 
-  res.redirect("/user");
+  res.redirect("/");
 });
 
 app.post("/login", function(req, res) {
@@ -95,8 +90,10 @@ app.post("/login", function(req, res) {
       }
     });
 
-    if (loggedUser){
-      req.checkBody("username", "Please enter a valid username.").notEmpty().isLength({max: 30});
+    if (loggedUser) {
+      req.checkBody("username", "Please enter a valid username.").notEmpty().isLength({
+        max: 30
+      });
       req.checkBody("password", "Please enter a password.").notEmpty();
       req.checkBody("password", "Invalid password and username combination").equals(loggedUser.password);
 
@@ -111,13 +108,14 @@ app.post("/login", function(req, res) {
       } else {
         req.session.username = req.body.username;
         req.session.passwrod = req.body.password;
-        res.redirect("/user");
+        res.redirect("/");
       }
+    } else {
+      messages.push("Invalid password and username combo");
+      res.render("login", {
+        errors: messages
+      });
     }
-    messages.push("Invalid password and username combo");
-    res.render("login", {
-      errors: messages
-    });
   }
 });
 
